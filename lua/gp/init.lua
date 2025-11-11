@@ -829,12 +829,11 @@ M.cmd.ChatNew = function(params, system_prompt, agent)
 		return -1
 	end
 
-	-- if chat toggle is open, close it and start a new one
+	params.args = params.args or ""
+	if params.args == "" then
+		params.args = M.config.toggle_target
+	end
 	if M._toggle_close(M._toggle_kind.chat) then
-		params.args = params.args or ""
-		if params.args == "" then
-			params.args = M.config.toggle_target
-		end
 		return M.new_chat(params, true, system_prompt, agent)
 	end
 
