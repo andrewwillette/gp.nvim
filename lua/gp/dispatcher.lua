@@ -219,15 +219,18 @@ D.prepare_payload = function(messages, model, provider)
 			model = model.model,
 			stream = true,
 			input = messages,
-			tools = D.config.openai_resp_tools,
 			max_output_tokens = model.max_completion_tokens or 4096,
 			temperature = math.max(0, math.min(2, model.temperature or 1)),
 			top_p = math.max(0, math.min(1, model.top_p or 1)),
 		}
+		-- only include tools if configured and non-empty
+		if D.config.openai_resp_tools and next(D.config.openai_resp_tools) then
+			output.tools = D.config.openai_resp_tools
+		end
 	end
 
-	if (provider == "openai" or provider == "copilot") and model.model:sub(1, 1) == "o" then
-		if model.model:sub(1, 2) == "o3" then
+	if (provider == "openai_resp" or provider == "copilot") and model.model:sub(1, 1) == "o" then
+		if provider == "copilot" and model.model:sub(1, 2) == "o3" then
 			output.reasoning_effort = model.reasoning_effort or "medium"
 		end
 
@@ -236,10 +239,12 @@ D.prepare_payload = function(messages, model, provider)
 				table.remove(messages, i)
 			end
 		end
-		-- remove max_tokens, top_p, temperature for o1 models. https://platform.openai.com/docs/guides/reasoning/beta-limitations
+		-- remove unsupported params for o-models. https://platform.openai.com/docs/guides/reasoning/beta-limitations
 		output.max_completion_tokens = nil
+		output.max_output_tokens = nil
 		output.temperature = nil
 		output.top_p = nil
+		output.tools = nil
 	end
 
 	if model.model == "gpt-5" or model.model == "gpt-5-mini" then
@@ -334,13 +339,6 @@ local query = function(buf, provider, payload, handler, on_exit, callback)
 					end
 				end
 
-				if line:match("choices") and line:match("delta") and line:match("content") then
-					line = vim.json.decode(line)
-					if line.choices[1] and line.choices[1].delta and line.choices[1].delta.content then
-						content = line.choices[1].delta.content
-					end
-				end
-
 				if qt.provider == "anthropic" and (line:match('"text":') or line:match('"thinking"')) then
 					if line:match("content_block_start") or line:match("content_block_delta") then
 						line = vim.json.decode(line)
@@ -414,7 +412,7 @@ local query = function(buf, provider, payload, handler, on_exit, callback)
 				end
 				local raw_response = qt.raw_response
 				local content = qt.response
-				if (qt.provider == 'openai' or qt.provider == 'copilot') and content == "" and raw_response:match('choices') and raw_response:match("content") then
+				if qt.provider == 'copilot' and content == "" and raw_response:match('choices') and raw_response:match("content") then
 					local response = vim.json.decode(raw_response)
 					if response.choices and response.choices[1] and response.choices[1].message and response.choices[1].message.content then
 						content = response.choices[1].message.content
@@ -502,14 +500,6 @@ local query = function(buf, provider, payload, handler, on_exit, callback)
 			"editor-version: vscode/1.85.1",
 			"-H",
 			"Authorization: Bearer " .. bearer,
-		}
-	elseif provider == "openai" then
-		headers = {
-			"-H",
-			"Authorization: Bearer " .. bearer,
-			-- backwards compatibility
-			"-H",
-			"api-key: " .. bearer,
 		}
 	elseif provider == "openai_resp" then
 		headers = {

@@ -28,11 +28,6 @@ local config = {
 		-- secret = { "bw", "get", "password", "OPENAI_API_KEY" },
 		-- secret : "sk-...",
 		-- secret = os.getenv("env_name.."),
-		openai = {
-			disable = false,
-			endpoint = "https://api.openai.com/v1/chat/completions",
-			-- secret = os.getenv("OPENAI_API_KEY"),
-		},
 		openai_resp = {
 			disable = false,
 			endpoint = "https://api.openai.com/v1/responses",
@@ -110,15 +105,6 @@ local config = {
 		},
 		{
 			name = "ChatGPT4o",
-			chat = true,
-			command = false,
-			-- string with model name or table with model name and parameters
-			model = { model = "gpt-4o", temperature = 1.1, top_p = 1 },
-			-- system prompt (use this to specify the persona/role of the AI)
-			system_prompt = require("gp.defaults").chat_system_prompt,
-		},
-		{
-			name = "ChatGPT4o_new",
 			provider = "openai_resp",
 			chat = true,
 			command = false,
@@ -128,7 +114,7 @@ local config = {
 			system_prompt = require("gp.defaults").chat_system_prompt,
 		},
 		{
-			provider = "openai",
+			provider = "openai_resp",
 			name = "ChatGPT4o-mini",
 			chat = true,
 			command = false,
@@ -138,7 +124,7 @@ local config = {
 			system_prompt = require("gp.defaults").chat_system_prompt,
 		},
 		{
-			provider = "openai",
+			provider = "openai_resp",
 			name = "ChatGPT-o3-mini",
 			chat = true,
 			command = false,
@@ -251,7 +237,7 @@ local config = {
 			system_prompt = "You are a general AI assistant.",
 		},
 		{
-			provider = "openai",
+			provider = "openai_resp",
 			name = "CodeGPT4o",
 			chat = false,
 			command = true,
@@ -261,7 +247,7 @@ local config = {
 			system_prompt = require("gp.defaults").code_system_prompt,
 		},
 		{
-			provider = "openai",
+			provider = "openai_resp",
 			name = "CodeGPT-o3-mini",
 			chat = false,
 			command = true,
@@ -271,7 +257,7 @@ local config = {
 			system_prompt = require("gp.defaults").code_system_prompt,
 		},
 		{
-			provider = "openai",
+			provider = "openai_resp",
 			name = "CodeGPT4o-mini",
 			chat = false,
 			command = true,
