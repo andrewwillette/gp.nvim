@@ -28,7 +28,7 @@ local config = {
 		-- secret = { "bw", "get", "password", "OPENAI_API_KEY" },
 		-- secret : "sk-...",
 		-- secret = os.getenv("env_name.."),
-		openai_resp = {
+		openai = {
 			disable = false,
 			endpoint = "https://api.openai.com/v1/responses",
 			secret = os.getenv("OPENAI_API_KEY"),
@@ -105,7 +105,7 @@ local config = {
 		},
 		{
 			name = "ChatGPT4o",
-			provider = "openai_resp",
+			provider = "openai",
 			chat = true,
 			command = false,
 			-- string with model name or table with model name and parameters
@@ -114,7 +114,7 @@ local config = {
 			system_prompt = require("gp.defaults").chat_system_prompt,
 		},
 		{
-			provider = "openai_resp",
+			provider = "openai",
 			name = "ChatGPT4o-mini",
 			chat = true,
 			command = false,
@@ -124,7 +124,7 @@ local config = {
 			system_prompt = require("gp.defaults").chat_system_prompt,
 		},
 		{
-			provider = "openai_resp",
+			provider = "openai",
 			name = "ChatGPT-o3-mini",
 			chat = true,
 			command = false,
@@ -237,7 +237,7 @@ local config = {
 			system_prompt = "You are a general AI assistant.",
 		},
 		{
-			provider = "openai_resp",
+			provider = "openai",
 			name = "CodeGPT4o",
 			chat = false,
 			command = true,
@@ -247,7 +247,7 @@ local config = {
 			system_prompt = require("gp.defaults").code_system_prompt,
 		},
 		{
-			provider = "openai_resp",
+			provider = "openai",
 			name = "CodeGPT-o3-mini",
 			chat = false,
 			command = true,
@@ -257,7 +257,7 @@ local config = {
 			system_prompt = require("gp.defaults").code_system_prompt,
 		},
 		{
-			provider = "openai_resp",
+			provider = "openai",
 			name = "CodeGPT4o-mini",
 			chat = false,
 			command = true,
@@ -371,7 +371,7 @@ local config = {
 	toggle_target = "vsplit",
 
 	-- utilize tooling made available in the openai responses API, see openAI's online documentation
-	openai_resp_tools = {},
+	openai_tools = {},
 
 	-- styling for chatfinder
 	---@type "single" | "double" | "rounded" | "solid" | "shadow" | "none"

@@ -73,7 +73,7 @@ M.setup = function(opts)
 	M.dispatcher.setup({
 		providers = opts.providers,
 		curl_params = curl_params,
-		openai_resp_tools = opts.openai_resp_tools
+		openai_tools = opts.openai_tools
 	})
 	M.config.providers = nil
 	opts.providers = nil

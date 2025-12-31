@@ -22,7 +22,7 @@ D.setup = function(opts)
 
 	D.config.curl_params = opts.curl_params or default_config.curl_params
 
-	D.config.openai_resp_tools = opts.openai_resp_tools or default_config.openai_resp_tools
+	D.config.openai_tools = opts.openai_tools or default_config.openai_tools
 
 	D.providers = vim.deepcopy(default_config.providers)
 	opts.providers = opts.providers or {}
@@ -214,7 +214,7 @@ D.prepare_payload = function(messages, model, provider)
 		temperature = math.max(0, math.min(2, model.temperature or 1)),
 		top_p = math.max(0, math.min(1, model.top_p or 1)),
 	}
-	if provider == "openai_resp" then
+	if provider == "openai" then
 		output = {
 			model = model.model,
 			stream = true,
@@ -224,12 +224,12 @@ D.prepare_payload = function(messages, model, provider)
 			top_p = math.max(0, math.min(1, model.top_p or 1)),
 		}
 		-- only include tools if configured and non-empty
-		if D.config.openai_resp_tools and next(D.config.openai_resp_tools) then
-			output.tools = D.config.openai_resp_tools
+		if D.config.openai_tools and next(D.config.openai_tools) then
+			output.tools = D.config.openai_tools
 		end
 	end
 
-	if (provider == "openai_resp" or provider == "copilot") and model.model:sub(1, 1) == "o" then
+	if (provider == "openai" or provider == "copilot") and model.model:sub(1, 1) == "o" then
 		if provider == "copilot" and model.model:sub(1, 2) == "o3" then
 			output.reasoning_effort = model.reasoning_effort or "medium"
 		end
@@ -308,7 +308,7 @@ local query = function(buf, provider, payload, handler, on_exit, callback)
 				line = line:gsub("^data: ", "")
 				local content = ""
 
-				if qt.provider == "openai_resp" then
+				if qt.provider == "openai" then
 					local ok, evt = pcall(vim.json.decode, line)
 					if ok and type(evt) == "table" and evt.type then
 						if evt.type == "response.output_text.delta"
@@ -422,7 +422,7 @@ local query = function(buf, provider, payload, handler, on_exit, callback)
 						handler(qid, content)
 					end
 				end
-				if qt.provider == "openai_resp" and content == "" then
+				if qt.provider == "openai" and content == "" then
 					local last_json
 					for json_str in raw_response:gmatch("data:%s*(%b{})") do
 						last_json = json_str
@@ -501,7 +501,7 @@ local query = function(buf, provider, payload, handler, on_exit, callback)
 			"-H",
 			"Authorization: Bearer " .. bearer,
 		}
-	elseif provider == "openai_resp" then
+	elseif provider == "openai" then
 		headers = {
 			"-H",
 			"Authorization: Bearer " .. bearer,
